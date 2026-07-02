@@ -1,0 +1,18 @@
+{
+  "name": "practice2026",
+  "version": "1.0.0",
+  "description": "1. 实现一个简单版的 EventBus",
+  "main": "eventBus.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "babel-jest": "^30.4.1",
+    "jest": "^30.4.2"
+  }
+}

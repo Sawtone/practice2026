@@ -1,0 +1,31 @@
+name: EventBus CI 自动化测试
+
+# 触发时机：向 main 分支发起 PR，或者直接 push 到 main 分支时
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 把代码拉取到云端服务器
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. 安装 Node.js 环境
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20"
+
+      # 3. 安装依赖
+      - name: Install dependencies
+        run: npm install
+
+      # 4. 执行测试用例
+      - name: Run tests
+        run: npm run test

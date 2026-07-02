@@ -1,4 +1,4 @@
-class EventBus {
+export default class EventBus {
   constructor() {
     this.events = {};
   }
@@ -10,9 +10,9 @@ class EventBus {
     this.events[eventName].push(listener);
   }
 
-  emit(eventName, data) {
+  emit(eventName, ...args) {
     if(this.events[eventName]) {
-      this.events[eventName].forEach(listener => listener(data));
+      this.events[eventName].forEach(listener => listener(...args));
     }
   }
 
@@ -22,12 +22,17 @@ class EventBus {
     }
   }
 
+  clean(eventName) {
+    if(this.events[eventName]) {
+      delete this.events[eventName];
+    }
+  }
+
   once(eventName, listener) {
-    const onceListener = (data) => {
-      listener(data);
+    const onceListener = (...args) => {
+      listener(...args);
       this.off(eventName, onceListener);
     };
     this.on(eventName, onceListener);
   }
-
 }
