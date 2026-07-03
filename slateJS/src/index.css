@@ -1,0 +1,18 @@
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #1a1a1a;
+  background: #fafafa;
+}
+
+blockquote {
+  margin: 0;
+  padding: 8px 16px;
+  border-left: 4px solid #4f46e5;
+  background: #eef2ff;
+  border-radius: 4px;
+}
+
+p {
+  margin: 0;
+}
