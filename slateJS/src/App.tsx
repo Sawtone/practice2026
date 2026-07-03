@@ -1,6 +1,6 @@
 import { useMemo, useCallback } from 'react'
 import { createEditor } from 'slate'
-import { Slate, Editable, withReact, useSlate } from 'slate-react'
+import { Slate, Editable, withReact, useSlate, ReactEditor } from 'slate-react'
 import { isBlockActive, toggleBlock } from './toggleQuote'
 
 const initialValue: any[] = [
@@ -18,7 +18,10 @@ function QuoteButton() {
     */
     <button
       onPointerDown={(e: any) => e.preventDefault()}
-      onClick={() => toggleBlock(editor, 'blockquote')}
+      onClick={() => {
+          if (!ReactEditor.isFocused(editor as ReactEditor)) return
+          toggleBlock(editor, 'blockquote')
+        }}
       style={{
         fontWeight: isBlockActive(editor, 'blockquote') ? 'bold' : 'normal',
       }}

@@ -18,6 +18,8 @@ export function isBlockActive(editor: Editor, format: string) {
 }
 
 export function toggleBlock(editor: Editor, format: string) {
+  if (!editor.selection) return
+
   const isActive = isBlockActive(editor, format)
 
   Transforms.setNodes(editor as any, {
