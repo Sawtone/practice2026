@@ -1,8 +1,7 @@
 {
   "name": "practice2026",
   "version": "1.0.0",
-  "description": "1. 实现一个简单版的 EventBus",
-  "main": "eventBus.js",
+  "description": "一些练习demo",
   "scripts": {
     "test": "jest"
   },
