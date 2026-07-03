@@ -1,6 +1,7 @@
 import { useMemo, useCallback } from 'react'
 import { createEditor } from 'slate'
 import { Slate, Editable, withReact, useSlate, ReactEditor } from 'slate-react'
+import { isHotkey } from 'is-hotkey'
 import { isBlockActive, toggleBlock } from './toggleQuote'
 
 const initialValue: any[] = [
@@ -43,6 +44,17 @@ function App() {
     }
   }, [])
 
+  const handleKeyDown = useCallback(
+    (event: any) => {
+      if (isHotkey('mod+alt+q', event)) {
+        event.preventDefault()
+        event.stopPropagation()
+        toggleBlock(editor, 'blockquote')
+      }
+    },
+    [editor]
+  )
+
   return (
     <div style={{ maxWidth: 720, margin: '40px auto', padding: '0 20px' }}>
       <Slate editor={editor} initialValue={initialValue}>
@@ -51,6 +63,7 @@ function App() {
         </div>
         <Editable
           renderElement={renderElement}
+          onKeyDown={handleKeyDown}
           placeholder="开始写作..."
           style={{
             padding: 20,
