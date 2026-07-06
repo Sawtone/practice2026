@@ -1,8 +1,8 @@
 import { createEditor, Transforms, Editor } from 'slate'
-import { isBlockActive, toggleBlock } from './toggleQuote'
+import { withQuote } from './withQuote'
 
 function setupEditor(initialValue: any[]) {
-  const editor = createEditor()
+  const editor = withQuote(createEditor())
   editor.children = initialValue
   return editor
 }
@@ -23,66 +23,66 @@ describe('isBlockActive', () => {
   test('无 selection 时返回 false', () => {
     const editor = setupEditor([makeParagraph()])
     editor.selection = null
-    expect(isBlockActive(editor, 'paragraph')).toBe(false)
+    expect(editor.isBlockActive('paragraph')).toBe(false)
   })
 
   test('光标在 paragraph 中，查询 paragraph 返回 true', () => {
     const editor = setupEditor([makeParagraph()])
     selectNode(editor, [0, 0])
-    expect(isBlockActive(editor, 'paragraph')).toBe(true)
+    expect(editor.isBlockActive('paragraph')).toBe(true)
   })
 
   test('光标在 paragraph 中，查询 blockquote 返回 false', () => {
     const editor = setupEditor([makeParagraph()])
     selectNode(editor, [0, 0])
-    expect(isBlockActive(editor, 'blockquote')).toBe(false)
+    expect(editor.isBlockActive('blockquote')).toBe(false)
   })
 
   test('光标在 blockquote 中，查询 blockquote 返回 true', () => {
     const editor = setupEditor([makeQuote()])
     selectNode(editor, [0, 0])
-    expect(isBlockActive(editor, 'blockquote')).toBe(true)
+    expect(editor.isBlockActive('blockquote')).toBe(true)
   })
 
   test('光标在 blockquote 中，查询 paragraph 返回 false', () => {
     const editor = setupEditor([makeQuote()])
     selectNode(editor, [0, 0])
-    expect(isBlockActive(editor, 'paragraph')).toBe(false)
+    expect(editor.isBlockActive('paragraph')).toBe(false)
   })
 
   test('多个段落，光标在第一个，只匹配第一个的 type', () => {
     const editor = setupEditor([makeQuote(), makeParagraph()])
     selectNode(editor, [0, 0])
-    expect(isBlockActive(editor, 'blockquote')).toBe(true)
+    expect(editor.isBlockActive('blockquote')).toBe(true)
   })
 })
 
-describe('toggleBlock', () => {
+describe('toggleQuote', () => {
   test('无 selection 时不修改任何节点', () => {
     const editor = setupEditor([makeParagraph('keep')])
     editor.selection = null
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
     expect((editor.children[0] as any).type).toBe('paragraph')
   })
 
   test('paragraph 切换为 blockquote', () => {
     const editor = setupEditor([makeParagraph()])
     selectNode(editor, [0, 0])
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
     expect((editor.children[0] as any).type).toBe('blockquote')
   })
 
   test('blockquote 切换回 paragraph', () => {
     const editor = setupEditor([makeQuote()])
     selectNode(editor, [0, 0])
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
     expect((editor.children[0] as any).type).toBe('paragraph')
   })
 
   test('同类型 toggle 不产生变化（paragraph → paragraph）', () => {
     const editor = setupEditor([makeParagraph()])
     selectNode(editor, [0, 0])
-    toggleBlock(editor, 'paragraph')
+    editor.toggleQuote('paragraph')
     expect((editor.children[0] as any).type).toBe('paragraph')
   })
 
@@ -90,13 +90,13 @@ describe('toggleBlock', () => {
     const editor = setupEditor([makeParagraph()])
     selectNode(editor, [0, 0])
 
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
     expect((editor.children[0] as any).type).toBe('blockquote')
 
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
     expect((editor.children[0] as any).type).toBe('paragraph')
 
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
     expect((editor.children[0] as any).type).toBe('blockquote')
   })
 
@@ -112,7 +112,7 @@ describe('toggleBlock', () => {
       focus: { path: [2, 0], offset: 0 },
     })
 
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
 
     expect((editor.children[0] as any).type).toBe('blockquote')
     expect((editor.children[1] as any).type).toBe('blockquote')
@@ -131,7 +131,7 @@ describe('toggleBlock', () => {
       focus: { path: [2, 0], offset: 0 },
     })
 
-    toggleBlock(editor, 'blockquote')
+    editor.toggleQuote('blockquote')
 
     expect((editor.children[0] as any).type).toBe('paragraph')
     expect((editor.children[1] as any).type).toBe('paragraph')
