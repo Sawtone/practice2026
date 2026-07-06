@@ -3,7 +3,7 @@ import { createEditor } from 'slate'
 import { Slate, Editable, withReact, useSlate, ReactEditor } from 'slate-react'
 import type { RenderElementProps } from 'slate-react'
 import { isHotkey } from 'is-hotkey'
-import { isBlockActive, toggleBlock } from './toggleQuote'
+import { withQuote, type QuoteEditor } from './withQuote'
 
 const initialValue = [
   { type: 'paragraph' as const, children: [{ text: '这是一段普通的段落文字。' }] },
@@ -11,16 +11,16 @@ const initialValue = [
 ]
 
 function Toolbar() {
-  const editor = useSlate()
+  const editor = useSlate() as any
 
   return (
     <div className="toolbar">
       <button
-        className={isBlockActive(editor, 'blockquote') ? 'active' : ''}
+        className={(editor as QuoteEditor).isBlockActive('blockquote') ? 'active' : ''}
         onPointerDown={(e: React.PointerEvent<HTMLButtonElement>) => e.preventDefault()}
         onClick={() => {
-          if (!ReactEditor.isFocused(editor as ReactEditor)) return
-          toggleBlock(editor, 'blockquote')
+          if (!ReactEditor.isFocused(editor)) return
+          (editor as QuoteEditor).toggleQuote('blockquote')
         }}
       >
         <span style={{ fontSize: 18, lineHeight: 1 }}>❝</span>
@@ -31,7 +31,7 @@ function Toolbar() {
 }
 
 function App() {
-  const editor = useMemo(() => withReact(createEditor()), [])
+  const editor = useMemo(() => withQuote(withReact(createEditor())), [])
 
   const renderElement = useCallback(({ attributes, children, element }: RenderElementProps) => {
     switch ((element as any).type) {
@@ -47,7 +47,7 @@ function App() {
       if (isHotkey('mod+alt+q', event)) {
         event.preventDefault()
         event.stopPropagation()
-        toggleBlock(editor, 'blockquote')
+        editor.toggleQuote('blockquote')
       }
     },
     [editor]
