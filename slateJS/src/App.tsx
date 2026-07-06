@@ -1,51 +1,49 @@
 import { useMemo, useCallback } from 'react'
 import { createEditor } from 'slate'
 import { Slate, Editable, withReact, useSlate, ReactEditor } from 'slate-react'
+import type { RenderElementProps } from 'slate-react'
 import { isHotkey } from 'is-hotkey'
 import { isBlockActive, toggleBlock } from './toggleQuote'
 
-const initialValue: any[] = [
-  { type: 'paragraph', children: [{ text: '这是一段普通的段落文字。' }] },
-  { type: 'paragraph', children: [{ text: '选中段落，点击工具栏的 Quote 按钮试试。' }] },
+const initialValue = [
+  { type: 'paragraph' as const, children: [{ text: '这是一段普通的段落文字。' }] },
+  { type: 'paragraph' as const, children: [{ text: '选中段落，点击工具栏的 Quote 按钮试试。快捷键 Cmd+Option+Q。' }] },
 ]
 
-function QuoteButton() {
+function Toolbar() {
   const editor = useSlate()
+
   return (
-    /*
-      e.preventDefault() 和 toggleBlock(editor, 'blockquote') 不可以同时在 mousedown 里触发
-      mousedown 触发时浏览器焦点转移已开始，会导致 toggleBlock 执行时 editor.selection 已变成 null
-      即按钮点击时编辑器失焦，selection 变为 null
-    */
-    <button
-      onPointerDown={(e: any) => e.preventDefault()}
-      onClick={() => {
+    <div className="toolbar">
+      <button
+        className={isBlockActive(editor, 'blockquote') ? 'active' : ''}
+        onPointerDown={(e: React.PointerEvent<HTMLButtonElement>) => e.preventDefault()}
+        onClick={() => {
           if (!ReactEditor.isFocused(editor as ReactEditor)) return
           toggleBlock(editor, 'blockquote')
         }}
-      style={{
-        fontWeight: isBlockActive(editor, 'blockquote') ? 'bold' : 'normal',
-      }}
-    >
-      Quote
-    </button>
+      >
+        <span style={{ fontSize: 18, lineHeight: 1 }}>❝</span>
+        Quote
+      </button>
+    </div>
   )
 }
 
 function App() {
   const editor = useMemo(() => withReact(createEditor()), [])
 
-  const renderElement = useCallback((props: any) => {
-    switch (props.element.type) {
+  const renderElement = useCallback(({ attributes, children, element }: RenderElementProps) => {
+    switch ((element as any).type) {
       case 'blockquote':
-        return <blockquote {...props.attributes}>{props.children}</blockquote>
+        return <blockquote {...attributes}>{children}</blockquote>
       default:
-        return <p {...props.attributes}>{props.children}</p>
+        return <p {...attributes}>{children}</p>
     }
   }, [])
 
   const handleKeyDown = useCallback(
-    (event: any) => {
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
       if (isHotkey('mod+alt+q', event)) {
         event.preventDefault()
         event.stopPropagation()
@@ -56,21 +54,15 @@ function App() {
   )
 
   return (
-    <div style={{ maxWidth: 720, margin: '40px auto', padding: '0 20px' }}>
+    <div className="editor-wrapper">
       <Slate editor={editor} initialValue={initialValue}>
-        <div style={{ marginBottom: 12, display: 'flex', gap: 8 }}>
-          <QuoteButton />
-        </div>
+        <Toolbar />
         <Editable
+          className="editor-body"
           renderElement={renderElement}
           onKeyDown={handleKeyDown}
           placeholder="开始写作..."
-          style={{
-            padding: 20,
-            border: '1px solid #ddd',
-            borderRadius: 8,
-            minHeight: 300,
-          }}
+          autoFocus
         />
       </Slate>
     </div>
