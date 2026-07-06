@@ -10,7 +10,9 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-
+    defaults:
+      run:
+        working-directory: eventBus
     steps:
       # 1. 把代码拉取到云端服务器
       - name: Checkout code
